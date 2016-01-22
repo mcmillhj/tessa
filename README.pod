@@ -1,3 +1,5 @@
+=pod
+
 =head1 NAME
 
 tessa
@@ -5,3 +7,16 @@ tessa
 =head1 DESCRIPTION 
 
 tessa, an asset manager
+
+=head4 BUILD-STATUS
+
+=begin HTML
+
+<p>
+  <a href="https://travis-ci.org/mcmillhj/tessa"><img src="https://travis-ci.org/mcmillhj/tessa.svg?branch=master" /></a>
+  <a href="https://coveralls.io/r/mcmillhj/tessa?branch=master"><img src="https://coveralls.io/repos/mcmillhj/tessa/badge.png?branch=master" /></a>
+</p>
+
+=end HTML
+
+=cut
