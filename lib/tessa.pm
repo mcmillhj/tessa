@@ -3,7 +3,7 @@ use Dancer2;
 
 our $VERSION = '0.1';
 
-get '/' => \&method_not_allowed;
+any [qw(get post put delete)] => '/' => \&method_not_allowed;
 
 options '/' => sub {
     return to_json { 
