@@ -1,9 +1,24 @@
-package tessa;
+ package tessa;
 use Dancer2;
 
 our $VERSION = '0.1';
 
-any [qw(get post put delete)] => '/' => \&method_not_allowed;
+use tessa::db::mysql;
+my $db = tessa::db::mysql->new(
+    username => 'root',
+    password => '!!Imogen1',
+);
+
+my %HTTP_STATUS_FOR = (
+    BAD_REQUEST	       => 400,
+    NOT_FOUND	       => 404,
+    METHOD_NOT_ALLOWED => 405,
+    SERVER_ERROR       => 500,
+);
+
+# / 
+# all HTTP verbs except for OPTIONS are not allowed for '/'
+any [qw(get post put del)] => '/' => \&_method_not_allowed;
 
 options '/' => sub {
     return to_json { 
@@ -27,8 +42,116 @@ options '/' => sub {
     };
 };
 
-sub method_not_allowed {
-    return send_error('METHOD NOT ALLOWED', 405);
+# /assets
+get '/assets' => sub {
+    my @assets;
+
+    my $assets = $db->get_all_assets();
+    if ( ! $assets ) {
+	return _throw_json_error('No assets exist', $HTTP_STATUS_FOR{NOT_FOUND});
+    }
+    
+    return to_json { assets => $assets };
+};
+
+post '/assets' => sub {
+    my $request = from_json request->body;
+
+    if ( ! $request->{name} || ! $request->{uri} ) {
+	return _throw_json_error(
+	    "Missing required parameter 'name' or 'uri' from JSON request body", 
+	    $HTTP_STATUS_FOR{BAD_REQUEST}
+	);
+    }
+    
+    my $asset = $db->put_asset( 
+	$request->{name}, 
+	$request->{uri},
+    );
+    return to_json $asset;     
+};
+
+del '/assets' => sub {
+    eval {
+	$db->delete_all_assets;
+    }; 
+    if ( my $err = $@ ) {
+	return _throw_json_error("Error deleting all assets and notes: '$err'", $HTTP_STATUS_FOR{SERVER_ERROR});
+    }
+
+    return;
+};
+
+# /assets/:asset_id
+get '/assets/:asset_id' => sub {
+    my $asset_id = route_parameters->get('asset_id');
+
+    my $asset = $db->get_asset( $asset_id );
+    use Data::Dumper; 
+    print Dumper $asset; 
+    if ( ! $asset ) {
+	return _throw_json_error("asset '$asset_id' does not exist", $HTTP_STATUS_FOR{NOT_FOUND});
+    }
+    
+    return to_json $asset;
+};
+
+post '/assets/:asset_id' => sub {
+    my $asset_id = route_parameters->get('asset_id');
+    my $request = from_json request->body;
+
+    if ( ! $request->{name} && ! $request->{uri} ) {
+	return _throw_json_error(
+	    "Must supply 'name' or 'uri' in JSON request body to update an asset", 
+	    $HTTP_STATUS_FOR{BAD_REQUEST}
+	);
+    }
+    
+    my $asset = $db->update_asset( 
+	$asset_id,
+	$request->{name}, 
+	$request->{uri},
+    );
+    if ( ! $asset ) {
+	return _throw_json_error("asset '$asset_id' does not exist", $HTTP_STATUS_FOR{NOT_FOUND});
+    }
+
+    return to_json $asset;
+};
+
+del '/assets/:asset_id' => sub {
+    my $asset_id = route_parameters->get('asset_id');
+
+    eval {
+	$db->delete_asset( $asset_id );
+    }; 
+    if ( my $err = $@ ) {
+	return _throw_json_error("Error deleting asset '$asset_id'", $HTTP_STATUS_FOR{SERVER_ERROR});
+    }
+    
+    return;
+};
+
+sub _build_error_json {
+    my ($error_message) = @_;
+
+    return to_json { errors => [ $error_message ] };
+}
+
+sub _throw_json_error {
+    my ($error_message, $http_status_code) = @_;
+
+    Dancer2::Core::Error->new(
+	response     => response(),
+	status       => $http_status_code,
+	content      => _build_error_json($error_message),
+	content_type => 'application/json',
+    )->throw;    
+    return;
+}
+
+sub _method_not_allowed {
+    return _throw_json_error('METHOD NOT ALLOWED', $HTTP_STATUS_FOR{METHOD_NOT_ALLOWED});
 }
 
 true;
