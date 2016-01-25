@@ -10,6 +10,7 @@ requires qw(
    put_asset
    put_note_for_asset
    update_asset
+   update_note_for_asset
 );
 
 1;
@@ -33,6 +34,7 @@ tessa::db
  put_asset
  put_notes_for_assets 
  update_asset
+ update_note_for_asset
 
 
 =head1 DESCRIPTION

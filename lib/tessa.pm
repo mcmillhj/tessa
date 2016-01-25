@@ -201,7 +201,17 @@ put '/assets/:asset_id/notes' => \&_method_not_allowed;
 
 # /assets/:asset_id/notes/:note_id
 
-put '/assets/:asset_id/notes/:note_id' => \&_method_not_allowed;
+post '/assets/:asset_id/notes/:note_id' => sub {
+    my $asset_id = route_parameters->get('asset_id');
+    my $note_id  = route_parameters->get('note_id');
+
+    my $note;
+    eval {
+	1;
+    };
+};
+
+any [qw(put get)] => '/assets/:asset_id/notes/:note_id' => \&_method_not_allowed;
 
 sub _asset_exists {
     my ($asset_id) = @_;

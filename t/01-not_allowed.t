@@ -59,13 +59,15 @@ subtest '/assets/:asset_id/notes' => sub {
 };
 
 subtest '/assets/:asset_id/notes/:note_id' => sub {
-    plan tests => 2;
+    plan tests => 4;
 
     my $test = Plack::Test->create($app);
-    my $res = $test->request( 
-	HTTP::Request->new(PUT => '/assets/1111/notes/2222') 
-    );  
+    foreach my $request_type ( qw(PUT GET) ) {
+	my $res = $test->request( 
+	    HTTP::Request->new($request_type => '/assets/1111/notes/2222') 
+	);  
 
-    ok( ! $res->is_success, '[PUT /assets/1111/notes/2222] was not successful' );
-    is( $res->code, 405, '[PUT /assets/1111/notes/2222] returned status code 405: Method Not Allowed' );
+	ok( ! $res->is_success, "[$request_type /assets/1111/notes/2222] was not successful" );
+	is( $res->code, 405, "[$request_type /assets/1111/notes/2222] returned status code 405: Method Not Allowed" );
+    }
 };

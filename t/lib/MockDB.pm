@@ -75,6 +75,14 @@ sub mock {
 	};
 	return _get_asset($asset_id);
     });    
+    $module->mock('update_note_for_asset', sub {
+	my ($self, $asset_id, $note_id, $note) = @_;
+
+	$notes{$note_id} = { 
+	    note => $note // $notes{$note_id}->{note}, 
+	};
+	return _get_asset($asset_id);
+    });    
 
     return;
 }

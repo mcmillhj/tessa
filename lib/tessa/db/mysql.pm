@@ -189,6 +189,19 @@ sub update_asset {
     return $self->get_asset( $asset_id );
 }
 
+sub update_note_for_asset {
+    my ($self, $asset_id, $note_id, $note) = @_;
+
+    my $note_sth = $self->dbh->prepare(q{
+       update tessa.notes
+       set note = ? 
+       where id = ? and asset_id = ?;
+    });
+    $note_sth->execute( $note, $note_id, $asset_id );
+
+    return $self->get_asest( $asset_id );
+}
+
 1;
 
 __END__
