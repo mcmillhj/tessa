@@ -16,6 +16,7 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
+    MIN_PERL_VERSION => 5.18.2,
     PREREQ_PM => {
         'Test::More' => 0,
         'YAML'       => 0,
