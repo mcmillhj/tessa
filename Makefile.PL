@@ -18,12 +18,14 @@ WriteMakefile(
     PL_FILES            => {},
     MIN_PERL_VERSION => 5.18.2,
     PREREQ_PM => {
-        'Test::More' => 0,
         'YAML'       => 0,
         'Dancer2'    => 0.166000,
         'DBI'        => 1.634,
-	'Test::MockModule' => 0.11,
 	'Moose'      => 2.1604,
+    },
+    TEST_REQUIRES => {
+	'Test::MockModule' => 0.11,
+        'Test::More'       => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'tessa-*' },
