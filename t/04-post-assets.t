@@ -1,6 +1,10 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use MockDB;
+MockDB::mock();
+
 use tessa;
 use Test::More tests => 2;
 use Plack::Test;
@@ -59,3 +63,5 @@ sub teardown {
 END { 
     teardown();
 }
+
+MockDB::restore();

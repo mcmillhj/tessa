@@ -48,9 +48,9 @@ get '/assets' => sub {
 
     my $assets = $db->get_all_assets();
     if ( ! $assets ) {
-	return _throw_json_error('No assets exist', $HTTP_STATUS_FOR{NOT_FOUND});
+	return _throw_json_error('no assets exist', $HTTP_STATUS_FOR{NOT_FOUND});
     }
-    
+
     return to_json { assets => $assets };
 };
 
@@ -82,13 +82,13 @@ del '/assets' => sub {
     return;
 };
 
+put '/assets' => \&_method_not_allowed;
+
 # /assets/:asset_id
 get '/assets/:asset_id' => sub {
     my $asset_id = route_parameters->get('asset_id');
 
     my $asset = $db->get_asset( $asset_id );
-    use Data::Dumper; 
-    print Dumper $asset; 
     if ( ! $asset ) {
 	return _throw_json_error("asset '$asset_id' does not exist", $HTTP_STATUS_FOR{NOT_FOUND});
     }
@@ -126,11 +126,88 @@ del '/assets/:asset_id' => sub {
 	$db->delete_asset( $asset_id );
     }; 
     if ( my $err = $@ ) {
-	return _throw_json_error("Error deleting asset '$asset_id'", $HTTP_STATUS_FOR{SERVER_ERROR});
+	return _throw_json_error("Error deleting asset '$asset_id': $err", $HTTP_STATUS_FOR{SERVER_ERROR});
     }
     
     return;
 };
+
+put '/assets/:asset_id' => \&_method_not_allowed;
+
+# /assets/:asset_id/notes
+
+get '/assets/:asset_id/notes' => sub {
+    my $asset_id = route_parameters->get('asset_id');
+
+    my $notes;
+    eval {
+	$notes = $db->get_all_notes_for_asset( $asset_id );
+    };
+    if ( my $err = $@ ) {
+	return _throw_json_error(
+	    "Error getting notes for asset '$asset_id': $err", 
+	    $HTTP_STATUS_FOR{SERVER_ERROR}
+	);
+    }
+
+    return to_json $notes;
+};
+
+post '/assets/:asset_id/notes' => sub {
+    my $asset_id = route_parameters->get('asset_id');
+
+    my $request = from_json request->body;
+    if ( ! $request->{note} ) {
+	return _throw_json_error(
+	    "Missing required parameter 'note' in JSON request body", 
+	    $HTTP_STATUS_FOR{BAD_REQUEST}
+	);
+    }
+    
+
+    my $asset;
+    eval {
+	_asset_exists( $asset_id ) 
+	    or return _throw_json_error("asset '$asset_id' does not exist", $HTTP_STATUS_FOR{NOT_FOUND});
+	$asset = $db->put_note_for_asset( $asset_id, $request->{note});
+    };
+    if ( my $err = $@ ) {
+	return _throw_json_error(
+	    "Error creating new note record for asset '$asset_id': $err", 
+	    $HTTP_STATUS_FOR{SERVER_ERROR}
+	);
+    }
+
+    return to_json $asset;
+};
+
+del '/assets/:asset_id/notes' => sub {
+    my $asset_id = route_parameters->get('asset_id');
+
+    eval {
+	$db->delete_all_notes_for_asset( $asset_id );
+    }; 
+    if ( my $err = $@ ) {
+	return _throw_json_error(
+	    "Error deleting all note records for asset '$asset_id': $err", 
+	    $HTTP_STATUS_FOR{SERVER_ERROR}
+	);
+    }
+    
+    return;
+};
+
+put '/assets/:asset_id/notes' => \&_method_not_allowed;
+
+# /assets/:asset_id/notes/:note_id
+
+put '/assets/:asset_id/notes/:note_id' => \&_method_not_allowed;
+
+sub _asset_exists {
+    my ($asset_id) = @_;
+
+    return $db->get_asset( $asset_id ) ? 1 : 0;
+}
 
 sub _build_error_json {
     my ($error_message) = @_;

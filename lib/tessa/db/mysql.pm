@@ -35,7 +35,7 @@ sub _build_dbh {
 	$self->dsn, 
 	$self->username,
 	$self->password, 
-	{ RaiseError => 1, AutoCommit => 1 }
+	{ RaiseError => 1, AutoCommit => 0 }
     );
 }
 
@@ -109,7 +109,7 @@ sub get_all_assets {
 
     my $assets = $sth->fetchall_arrayref( {} );
     foreach my $asset ( @$assets ) {
-	my $notes = $self->_get_notes_for_asset( $asset->{id} );
+	my $notes = $self->get_all_notes_for_asset( $asset->{id} );
 	$asset->{notes} = $notes && @$notes ? $notes : undef; 
     }
 
@@ -131,13 +131,13 @@ sub get_asset {
     my $asset = $sth->fetchrow_hashref;
     return unless $asset;
 
-    my $notes = $self->_get_notes_for_asset( $asset_id );
+    my $notes = $self->get_all_notes_for_asset( $asset_id );
     $asset->{notes} = $notes && @$notes ? $notes : undef; 
 
     return $asset;
 }
 
-sub _get_notes_for_asset {
+sub get_all_notes_for_asset {
     my ($self, $asset_id) = @_;
 
     my $note_sth = $self->dbh->prepare(q{
@@ -154,7 +154,9 @@ sub _get_notes_for_asset {
 sub put_asset {
     my ($self, $name, $uri ) = @_;
 
-    my $sth = $self->dbh->prepare("insert into tessa.assets (name, uri) values (?, ?);");
+    my $sth = $self->dbh->prepare(q{
+       insert into tessa.assets (name, uri) values (?, ?);
+    });
     $sth->execute( $name, $uri );
 
     my $asset_id = $self->dbh->{mysql_insertid};
@@ -165,7 +167,7 @@ sub put_note_for_asset {
     my ($self, $asset_id, $note) = @_;
 
     my $sth = $self->dbh->prepare(q{
-       insert into tessa.notes (note, asset_id)
+       insert into tessa.notes (asset_id, note)
        values (?, ?);
     });
     $sth->execute( $asset_id, $note );
@@ -222,25 +224,53 @@ MySQL database backend for a tessa instance
  # delete an asset
  $db->delete_asset( $assert_hashref->{id} );
 
+ # add a note 
+ $db->put_note_for_asset( $asset_hashref->{id}, '<note>' );
+
 =head1 METHODS 
 
 =over 4
+
+=item I<delete_asset>
+
+delete an asset record from tessa.assets denoted by the supplied $asset_id
+
+=item I<delete_all_assets>
+
+delete all asset records from tessa.assets
+
+=item I<delete_all_notes_for_asset>
+
+delete all note records from tessa.notes for a particular $asset_id
+
+=item I<delete_not_for_asset>
+
+delete a specific note record, denoted by $note_id, for a particular $asset_id
 
 =item I<get_asset> 
 
 retrieve an asset record from tessa.assets by the supplied $asset_id
 
-=item I<update_asset>
+=item I<get_all_asset> 
 
-update an asset record in tessa.assets by id, overwriting the $name and $uri data fields if new values are supplied
+retrieve all asset records from tessa.assets, including any notes that an asset may have
+in tessa.notes
+
+=item I<get_all_notes_for_asset> 
+
+retrieve all note records from tessa.notes for a particular $asset_id
 
 =item I<put_asset> 
 
 create a new asset record in tessa.assets with the supplied name a$nd $uri
 
-=item I<delete_asset>
+=item I<put_note_for_asset>
 
-delete an asset record from tessa.assets denoted by the supplied $asset_id
+create a new note record for a particular $asset_id
+
+=item I<update_asset>
+
+update an asset record in tessa.assets by id, overwriting the $name and $uri data fields if new values are supplied
 
 =back
 

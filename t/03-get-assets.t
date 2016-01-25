@@ -1,6 +1,10 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use MockDB;
+MockDB::mock();
+
 use tessa;
 use Test::More tests => 4;
 use Plack::Test;
@@ -53,6 +57,7 @@ subtest 'GET /assets [1 ASSET]' => sub {
     $res = $test->request( 
 	HTTP::Request->new(GET => "/assets/$asset_id") 
     ); 
+
     is_deeply(
 	JSON::from_json($res->content),
 	{ id    => $asset_id, 
@@ -89,3 +94,5 @@ sub teardown {
     
     return;
 }
+
+MockDB::restore();
