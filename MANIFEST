@@ -3,7 +3,6 @@ cpanfile
 config.yml
 MANIFEST.SKIP
 Makefile.PL
-.dancer
 views/index.tt
 views/layouts/main.tt
 lib/tessa.pm
@@ -18,8 +17,6 @@ t/02-options.t
 t/03-get-assets.t
 t/04-post-assets.t
 t/05-delete-assets.t
-t/06-post-notes.t
-t/07-delete-notes.t
 t/lib/MockDB.pm
 public/dispatch.cgi
 public/500.html
