@@ -1,4 +1,4 @@
- package tessa;
+package tessa;
 use Dancer2;
 
 our $VERSION = '0.1';
@@ -68,7 +68,7 @@ post '/assets' => sub {
 	$request->{name}, 
 	$request->{uri},
     );
-    return to_json $asset;     
+    return to_json($asset);     
 };
 
 del '/assets' => sub {
@@ -141,6 +141,8 @@ get '/assets/:asset_id/notes' => sub {
 
     my $notes;
     eval {
+	_asset_exists( $asset_id ) 
+	    or return _throw_json_error("asset '$asset_id' does not exist", $HTTP_STATUS_FOR{NOT_FOUND});
 	$notes = $db->get_all_notes_for_asset( $asset_id );
     };
     if ( my $err = $@ ) {
@@ -164,7 +166,6 @@ post '/assets/:asset_id/notes' => sub {
 	);
     }
     
-
     my $asset;
     eval {
 	_asset_exists( $asset_id ) 
@@ -205,10 +206,45 @@ post '/assets/:asset_id/notes/:note_id' => sub {
     my $asset_id = route_parameters->get('asset_id');
     my $note_id  = route_parameters->get('note_id');
 
-    my $note;
+    my $request = from_json request->body;
+    if ( ! $request->{note} ) {
+	return _throw_json_error(
+	    "Missing required parameter 'note' in JSON request body", 
+	    $HTTP_STATUS_FOR{BAD_REQUEST}
+	);
+    }
+
+    my $asset;
     eval {
-	1;
+	_asset_exists( $asset_id ) 
+	    or return _throw_json_error("asset '$asset_id' does not exist", $HTTP_STATUS_FOR{NOT_FOUND});
+	_asset_owns_note( $asset_id, $note_id )
+	    or return _throw_json_error("asset '$asset_id' does not own note '$note_id'", $HTTP_STATUS_FOR{BAD_REQUEST});
+	$asset = $db->update_note_for_asset( $asset_id, $note_id, $request->{note} );
     };
+
+    return to_json $asset;
+};
+
+del '/assets/:asset_id/notes/:note_id' => sub {
+    my $asset_id = route_parameters->get('asset_id');
+    my $note_id  = route_parameters->get('note_id');
+
+    eval {
+	_asset_exists( $asset_id ) 
+	    or return _throw_json_error("asset '$asset_id' does not exist", $HTTP_STATUS_FOR{NOT_FOUND});
+	_asset_owns_note( $asset_id, $note_id )
+	    or return _throw_json_error("asset '$asset_id' does not own note '$note_id'", $HTTP_STATUS_FOR{BAD_REQUEST});
+	$db->delete_note_for_asset( $asset_id, $note_id );
+    }; 
+    if ( my $err = $@ ) {
+	return _throw_json_error(
+	    "Error deleting note record '$note_id' for asset '$asset_id': $err", 
+	    $HTTP_STATUS_FOR{SERVER_ERROR}
+	);
+    }
+
+    return;
 };
 
 any [qw(put get)] => '/assets/:asset_id/notes/:note_id' => \&_method_not_allowed;
@@ -217,6 +253,14 @@ sub _asset_exists {
     my ($asset_id) = @_;
 
     return $db->get_asset( $asset_id ) ? 1 : 0;
+}
+
+sub _asset_owns_note {
+    my ($asset_id, $note_id) = @_;
+
+    return grep { 
+	$_->{id} == $note_id 
+    } @{ $db->get_asset( $asset_id )->{notes} };
 }
 
 sub _build_error_json {

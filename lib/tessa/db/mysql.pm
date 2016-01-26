@@ -285,6 +285,10 @@ create a new note record for a particular $asset_id
 
 update an asset record in tessa.assets by id, overwriting the $name and $uri data fields if new values are supplied
 
+=item I<update_note_for_asset>
+
+update a note record $note_id that belongs to an asset record $asset_id
+
 =back
 
 =cut 

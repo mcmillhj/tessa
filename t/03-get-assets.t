@@ -33,7 +33,7 @@ subtest 'GET /assets [1 ASSET]' => sub {
     my $test = Plack::Test->create($app);
     my $req  = HTTP::Request->new(POST => '/assets');
     $req->header('application/json');
-    $req->content('{"name":"hunter","uri":"myorg:///users/hunter"}');
+    $req->content( JSON::to_json({name => "hunter", uri => "myorg:///users/hunter"}) );
     $test->request( $req );
 
     my $res = $test->request( 

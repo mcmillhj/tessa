@@ -1,5 +1,8 @@
 package MockDB;
 
+use strict;
+use warnings; 
+
 use tessa::db::mysql;
 use Test::MockModule;
 
@@ -48,9 +51,10 @@ sub mock {
     });
     $module->mock('get_all_notes_for_asset', sub {
 	my ($self, $asset_id) = @_;
-	
+
 	return [
-	    grep { $notes{$_}->{asset_id} eq $asset_id } keys %notes 
+	    map  { $notes{$_} }
+	    grep { $notes{$_}->{asset_id} == $asset_id } keys %notes 
         ]; 
     });
     $module->mock('put_asset', sub {
@@ -69,18 +73,14 @@ sub mock {
     $module->mock('update_asset', sub {
 	my ($self, $asset_id, $name, $uri) = @_;
 
-	$assets{$asset_id} = { 
-	    name => $name // $assets{$asset_id}->{name}, 
-	    uri  => $uri // $assets{$asset_id}->{uri}, 
-	};
+	$assets{$asset_id}->{name} = $name // $assets{$asset_id}->{name};
+	$assets{$asset_id}->{uri}  = $uri // $assets{$asset_id}->{uri}, 
 	return _get_asset($asset_id);
     });    
     $module->mock('update_note_for_asset', sub {
 	my ($self, $asset_id, $note_id, $note) = @_;
 
-	$notes{$note_id} = { 
-	    note => $note // $notes{$note_id}->{note}, 
-	};
+	$notes{$note_id}->{note} = $note // $notes{$note_id}->{note};
 	return _get_asset($asset_id);
     });    
 
@@ -93,9 +93,13 @@ sub _get_asset {
 
     my @notes;
     foreach my $note_id ( keys %notes ) {
-	next unless $notes->{$note_id}->{asset_id} == $asset_id;
+	next unless $notes{$note_id}->{asset_id} == $asset_id;
 	
-	push @notes, { id => $note_id, note => $notes{$note_id}->{note} };
+	push @notes, { 
+	    asset_id => $asset_id, 
+	    id	     => $note_id, 
+	    note     => $notes{$note_id}->{note},
+	};
     }
     
     return { 
