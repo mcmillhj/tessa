@@ -96,7 +96,7 @@ get '/assets/:asset_id' => sub {
     return to_json $asset;
 };
 
-post '/assets/:asset_id' => sub {
+put '/assets/:asset_id' => sub {
     my $asset_id = route_parameters->get('asset_id');
     my $request = from_json request->body;
 
@@ -132,7 +132,7 @@ del '/assets/:asset_id' => sub {
     return;
 };
 
-put '/assets/:asset_id' => \&_method_not_allowed;
+post '/assets/:asset_id' => \&_method_not_allowed;
 
 # /assets/:asset_id/notes
 
@@ -202,7 +202,7 @@ put '/assets/:asset_id/notes' => \&_method_not_allowed;
 
 # /assets/:asset_id/notes/:note_id
 
-post '/assets/:asset_id/notes/:note_id' => sub {
+put '/assets/:asset_id/notes/:note_id' => sub {
     my $asset_id = route_parameters->get('asset_id');
     my $note_id  = route_parameters->get('note_id');
 
@@ -247,7 +247,7 @@ del '/assets/:asset_id/notes/:note_id' => sub {
     return;
 };
 
-any [qw(put get)] => '/assets/:asset_id/notes/:note_id' => \&_method_not_allowed;
+any [qw(post get)] => '/assets/:asset_id/notes/:note_id' => \&_method_not_allowed;
 
 sub _asset_exists {
     my ($asset_id) = @_;

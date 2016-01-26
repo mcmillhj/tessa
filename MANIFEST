@@ -15,11 +15,9 @@ t/00-compile.t
 t/01-not-allowed.t
 t/02-options.t
 t/03-get-assets.t
-t/04-post-assets.t
+t/04-put-post-assets.t
 t/05-delete-assets.t
-t/06-get-notes.t
-t/07-post-notes.t
-t/08-delete-notes.t
+t/06-notes.t
 t/lib/MockDB.pm
 public/dispatch.cgi
 public/500.html

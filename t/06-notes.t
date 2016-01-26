@@ -95,12 +95,12 @@ subtest 'GET/POST/DELETE /assets/:asset_id/notes' => sub {
     }
 
     { # update a note 
-	my $req  = HTTP::Request->new(POST => "/assets/$asset_id/notes/$note_id");
+	my $req  = HTTP::Request->new(PUT => "/assets/$asset_id/notes/$note_id");
 	$req->content_type('application/json');
 	$req->content( JSON::to_json( { note => 'NOTE2 for hunter [updated]' }) );
 	my $res = $test->request( $req );
-	ok( $res->is_success, "POST /assets/$asset_id/notes/$note_id was successful" );
-	is( $res->code, 200, "POST /assets/$asset_id/notes/$note_id returned 200" );	
+	ok( $res->is_success, "PUT /assets/$asset_id/notes/$note_id was successful" );
+	is( $res->code, 200, "PUT /assets/$asset_id/notes/$note_id returned 200" );	
 
 	my $json_response = JSON::from_json($res->content);
 	is_deeply( 
