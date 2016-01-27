@@ -145,41 +145,5 @@ sub teardown {
     return;
 }
 
-END { 
-    teardown();
-}
-
+teardown();
 MockDB::restore();
-
-__END__
-=begin
-subtest 'DELETE /assets/asset' => sub {
-    plan tests => 3;
-
-    my $test = Plack::Test->create($app);
-    my $asset_id; 
-    { # create an asset 
-	my $req  = HTTP::Request->new(POST => '/assets');
-	$req->header('application/json');
-	$req->content('{"name":"hunter","uri":"myorg:///users/hunter"}');
-	my $response = $test->request( $req );
-	my $json_response = JSON::from_json($response->content);
-	$asset_id = $json_response->{id};
-    }
-
-    { # delete the created asset
-	my $req  = HTTP::Request->new(DELETE => "/assets/$asset_id");
-	my $response = $test->request( $req );
-	
-	ok( $response->is_success, "DELETE /assets/$asset_id was successful" );
-    }
-
-    { # attempt to retrieve asset $asset_id, should not exist
-	my $req  = HTTP::Request->new(GET => "/assets/$asset_id");
-	my $response = $test->request( $req );
-	
-	ok( ! $response->is_success, "GET /assets/$asset_id failed" );
-	is( $response->code, 404, "GET /assets/$asset_id returned 404" );
-    }
-};
-=end

@@ -77,7 +77,7 @@ post '/assets' => sub {
 	);
     }
   # TODO TEST FOR THIS  
-    _validate_asset_record( $request->{name}, $request->{uri} ); 
+    return unless _validate_asset_record( $request->{name}, $request->{uri} ); 
 	    
     my $asset;
     eval {
@@ -139,7 +139,7 @@ put '/assets/:asset_id' => sub {
     }
     
     # TODO TEST FOR THIS  
-    _validate_asset_record( $request->{name}, $request->{uri} ); 
+    return unless _validate_asset_record( $request->{name}, $request->{uri} ); 
 
     my $asset;
     eval {
@@ -205,8 +205,7 @@ post '/assets/:asset_id/notes' => sub {
 	);
     }
    
-    # TODO TEST FOR THIS 
-    _validate_note_record( $request->{note} );
+    return unless _validate_note_record( $request->{note} );
  
     my $asset;
     eval {
@@ -255,7 +254,7 @@ put '/assets/:asset_id/notes/:note_id' => sub {
 	);
     }
 
-    _validate_note_record( $request->{note} );
+    return unless _validate_note_record( $request->{note} );
 
     my $asset;
     eval {

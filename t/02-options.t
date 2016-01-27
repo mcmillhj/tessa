@@ -1,6 +1,10 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use MockDB;
+MockDB::mock();
+
 use tessa;
 use Test::More tests => 3;
 use Plack::Test;
@@ -42,4 +46,6 @@ sub _expected_endpoints {
 	],
     };
 }
+
+MockDB::restore();
 	   

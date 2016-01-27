@@ -1,6 +1,10 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use MockDB;
+MockDB::mock();
+
 use tessa;
 use Test::More tests => 6;
 use Plack::Test;
@@ -71,3 +75,5 @@ subtest '/assets/:asset_id/notes/:note_id' => sub {
 	is( $res->code, 405, "[$request_type /assets/1111/notes/2222] returned status code 405: Method Not Allowed" );
     }
 };
+
+MockDB::restore();

@@ -1,4 +1,4 @@
-=pod
+=pod 
 
 =head1 NAME
 
@@ -19,4 +19,95 @@ tessa, an asset manager
 
 =end HTML
 
+=head4 USAGE/EXAMPLE RESPONSES 
+ 
+ # create an asset 
+ curl -X POST http://tessa1.hjm.im/assets \
+      -H 'Content-Type: application/json' \ 
+      -d '{"name":"hunter","uri":"myorg:///users/hunter"}'
+ {
+  "name": "hunter",
+  "notes": [],
+  "uri": "myorg:///users/hunter",
+  "id": "7"
+ }
+
+ # get all assets 
+ curl http://tessa1.hjm.im/assets
+ {
+  "assets": [
+    {
+      "uri": "myorg:///users/hunter2",
+      "id": "5",
+      "name": "hunter2",
+      "notes": []
+    },
+    {
+      "id": "7",
+      "uri": "myorg:///users/hunter",
+      "notes": [],
+      "name": "hunter"
+    }
+  ]
+ }
+
+ # get a single asset
+ curl http://tessa1.hjm.im/assets/7
+ {
+  "id": "7",
+  "uri": "myorg:///users/hunter",
+  "name": "hunter",
+  "notes": []
+ }
+
+ # update an asset 
+ curl -X PUT http://tessa1.hjm.im/assets/7 \
+      -H 'Content-Type: application/json' \ 
+      -d '{"name":"hunter3"}'
+ {
+  "notes": [],
+  "name": "hunter3",
+  "uri": "myorg:///users/hunter",
+  "id": "7"
+ }
+
+ # delete an asset 
+ curl -X DELETE http://tessa1.hjm.im/assets/7
+
+ # delete all assets
+ curl -X DELETE http://tessa1.hjm.im/assets 
+
+ # create a note for an asset 
+ curl -X POST http://tessa1.hjm.im/assets/11/notes \
+      -H 'Content-Type: application-json' \
+      -d '{"note":"this is a note"}'
+ {
+  "name": "hunter",
+  "uri": "myorg:///users/hunter",
+  "notes": [
+    {
+      "asset_id": "11",
+      "note": "this is a note",
+      "id": "3"
+    }
+  ],
+  "id": "11"
+ } 
+
+ # get all notes for an asset
+ curl http://tessa1.hjm.im/assets/11/notes
+ [
+  {
+    "asset_id": "11",
+    "note": "this is a note",
+    "id": "3"
+  }
+ ]
+ 
+ # update a note for an asset
+ curl -X PUT http://tessa1.hjm.im/assets/11/notes/3 \
+      -H 'Content-Type: application/json' \
+      -d '{"note":"this is an updated note"}'
+
+ 
 =cut

@@ -95,4 +95,5 @@ sub teardown {
     return;
 }
 
+teardown();
 MockDB::restore();

@@ -25,7 +25,7 @@ has dbh => (
 );
 
 sub _build_dsn {
-    return 'DBI:mysql:;port=3306;database=tessa;host=192.34.60.159';
+    return 'DBI:mysql:;port=3306;database=tessa;host=192.34.60.158';
 }
 
 sub _build_dbh {
