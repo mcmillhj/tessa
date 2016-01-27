@@ -197,7 +197,7 @@ sub update_note_for_asset {
     });
     $note_sth->execute( $note, $note_id, $asset_id );
 
-    return $self->get_asest( $asset_id );
+    return $self->get_asset( $asset_id );
 }
 
 1;
