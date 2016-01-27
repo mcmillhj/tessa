@@ -5,8 +5,8 @@ our $VERSION = '0.1';
 
 use tessa::db::mysql;
 my $db = tessa::db::mysql->new(
-    username => 'root',
-    password => '!!Imogen1',
+    username => 'tessa',
+    password => 'asset',
 );
 
 my %HTTP_STATUS_FOR = (

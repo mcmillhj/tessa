@@ -25,7 +25,7 @@ has dbh => (
 );
 
 sub _build_dsn {
-    return 'DBI:mysql:database=tessa;host=localhost;port=3306';
+    return 'DBI:mysql:;port=3306;database=tessa;host=<production-host>';
 }
 
 sub _build_dbh {
@@ -35,7 +35,7 @@ sub _build_dbh {
 	$self->dsn, 
 	$self->username,
 	$self->password, 
-	{ RaiseError => 1, AutoCommit => 0 }
+	{ RaiseError => 1, AutoCommit => 1, PrintError => 1, ShowErrorStatement => 1 }
     );
 }
 
