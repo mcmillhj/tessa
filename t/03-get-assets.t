@@ -48,7 +48,7 @@ subtest 'GET /assets [1 ASSET]' => sub {
 	      { id    => $asset_id,
 		name  => 'hunter', 
 		uri   => 'myorg:///users/hunter',
-		notes => undef,
+		notes => [],
 	      }], 
 	},
 	'got JSON array with a single asset record',
@@ -63,7 +63,7 @@ subtest 'GET /assets [1 ASSET]' => sub {
 	{ id    => $asset_id, 
 	  name  => 'hunter', 
 	  uri   => 'myorg:///users/hunter',
-	  notes => undef,
+	  notes => [],
 	},
 	'got correct asset for \'hunter\', \'myorg:///users/hunter\'',
     );

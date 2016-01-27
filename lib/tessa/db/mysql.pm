@@ -25,7 +25,7 @@ has dbh => (
 );
 
 sub _build_dsn {
-    return 'DBI:mysql:;port=3306;database=tessa;host=<production-host>';
+    return 'DBI:mysql:;port=3306;database=tessa;host=192.34.60.158';
 }
 
 sub _build_dbh {
@@ -109,8 +109,7 @@ sub get_all_assets {
 
     my $assets = $sth->fetchall_arrayref( {} );
     foreach my $asset ( @$assets ) {
-	my $notes = $self->get_all_notes_for_asset( $asset->{id} );
-	$asset->{notes} = $notes && @$notes ? $notes : undef; 
+	$asset->{notes} = $self->get_all_notes_for_asset( $asset->{id} );
     }
 
     return $assets;
@@ -131,9 +130,7 @@ sub get_asset {
     my $asset = $sth->fetchrow_hashref;
     return unless $asset;
 
-    my $notes = $self->get_all_notes_for_asset( $asset_id );
-    $asset->{notes} = $notes && @$notes ? $notes : undef; 
-
+    $asset->{notes} = $self->get_all_notes_for_asset( $asset_id );
     return $asset;
 }
 

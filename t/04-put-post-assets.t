@@ -48,7 +48,7 @@ subtest 'POST /assets' => sub {
 	    { id	=> $json_response->{id}, 
 	      name	=> 'hunter', 
 	      uri	=> 'myorg:///users/hunter', 
-	      notes => undef 
+	      notes     => [],
 	    },
 	    'successful POST /assets returned asset that was created'
 	);
@@ -75,7 +75,7 @@ subtest 'PUT /assets/:asset_id' => sub {
 	    { id	=> $json_response->{id}, 
 	      name	=> 'hunter-[updated]', 
 	      uri	=> 'myorg:///users/hunter', 
-	      notes => undef 
+	      notes     => [],
 	    },
 	    "successful PUT /assets/$asset_id returned asset that was updated",
        );

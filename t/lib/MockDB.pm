@@ -106,7 +106,7 @@ sub _get_asset {
 	id    => $asset_id,
 	name  => $assets{$asset_id}->{name},
 	uri   => $assets{$asset_id}->{uri},
-	notes => @notes ? \@notes : undef,
+	notes => [ @notes ],
     }; 
 }
 
