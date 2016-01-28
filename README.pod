@@ -2,11 +2,11 @@
 
 =head1 NAME
 
-tessa
+Tessa
 
 =head1 DESCRIPTION 
 
-tessa, an asset manager
+Tessa, an asset manager
 
 =head4 BUILD-STATUS
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 HOST=${HOST:-tessa1.hjm.im}
-
 get_notes=0
+
 for i in $(seq 1 10000)
 do
     asset_name="user_${i}"
