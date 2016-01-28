@@ -78,7 +78,7 @@ tessa, an asset manager
  curl -X DELETE http://tessa1.hjm.im/assets 
 
  # create a note for an asset 
- curl -X POST http://tessa1.hjm.im/assets/11/notes \
+ curl -X POST http://tessa1.hjm.im/assets/15/notes \
       -H 'Content-Type: application-json' \
       -d '{"note":"this is a note"}'
  {
@@ -86,21 +86,21 @@ tessa, an asset manager
   "uri": "myorg:///users/hunter",
   "notes": [
     {
-      "asset_id": "11",
+      "asset_id": "15",
       "note": "this is a note",
-      "id": "3"
+      "id": "5"
     }
   ],
-  "id": "11"
+  "id": "15"
  } 
 
  # get all notes for an asset
  curl http://tessa1.hjm.im/assets/11/notes
  [
   {
-    "asset_id": "11",
+    "asset_id": "15",
     "note": "this is a note",
-    "id": "3"
+    "id": "5"
   }
  ]
  
@@ -109,5 +109,35 @@ tessa, an asset manager
       -H 'Content-Type: application/json' \
       -d '{"note":"this is an updated note"}'
 
- 
+ {
+  "uri": "myorg:///users/hunter",
+  "id": "15",
+  "name": "hunter",
+  "notes": [
+    {
+      "id": "5",
+      "asset_id": "15",
+      "note": "this is an updated note"
+    }
+  ]
+ } 
+
+ # delete a note for an asset
+ curl -X DELETE http://tessa1.hjm.im/assets/15/notes/5
+
+ # delete all notes for an asset
+ curl -X DELETE http://tessa1.hjm.im/assets/15/notes
+
+=head4 LOAD-TESTING
+
+There are two scripts in bin/ write-assets-and-notes.sh and get-assets-and-notes.sh
+The best way I have found to test the system is to run both of these for both hosts in four separate terminals:
+
+ HOST=tessa1.hjm.im write-assets-and-notes.sh
+ HOST=tessa1.hjm.im get-assets-and-notes.sh
+ HOST=tessa2.hjm.im write-assets-and-notes.sh
+ HOST=tessa2.hjm.im get-assets-and-notes.sh
+
+at peak usage I saw ~500 queries per second in mytop and ~48 CPU usage in top. However I quickly ran out of available memory while attempting to loadtest, the Digital Ocean boxes only have 1CPU and 1GB of RAM so there isn't much to do about that. 
+
 =cut
