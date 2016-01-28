@@ -13,7 +13,7 @@ do
   
    # every other asset created, create a note
    if [ $write_note -eq 1 ]; then 
-  	curl -X POST http://$HOST/$i/notes \
+  	curl -X POST http://$HOST/assets/$i/notes \
              -H 'Content-Type: application/json' \
 	     -d "{\"note\":\"This is a NOTE for $asset_name\"}" 2&>1 >/dev/null
 	write_note=0
