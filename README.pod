@@ -19,6 +19,54 @@ tessa, an asset manager
 
 =end HTML
 
+=head4 BUILDING LOCALLY
+
+All build instructions were tested on Ubuntu 14.04 and Debian 8 servers hosted on Digital Ocean.
+
+Things you will need to build Tessa:
+
+=over 4 
+
+=item I<cpanminus>
+
+a CPAN client to install Perl modules
+
+=item I<git> 
+
+Distributed VCS and interface to Github
+
+=item I<make>
+
+a program to build Tesa
+
+=back 
+
+Install all dependencies, build, and test Tessa
+
+ apt-get install cpanminus git build-essential
+ git clone https://github.com/mcmillhj/tessa.git && cd tessa
+ cpam --installdeps --notest .
+ # may take a few minutes
+ perl Makefile.PL
+ make test 
+
+Please note that this will install modules into your System Perl, the Perl your OS uses to actually do things. System Perl is notoriously fickle on OS X because Apple modifies the Perl binary. You can avoid this by using Perlbrew, which will install Perl into your home directory, and installing perl v5.18.2 from there
+
+ \curl -L http://install.perlbrew.pl | bash
+ perlbrew init 
+ source ~/perl5/perlbrew/etc/bashrc
+ perlbrew install --notest 5.18.2
+
+Start a local instance of the Tessa Dancer2 application
+
+ plackup -p 5000 bin/app.psgi
+
+Make requests against local instance
+
+ curl http://localhost:5000/assets
+ 
+@
+
 =head4 USAGE/EXAMPLE RESPONSES 
  
  # create an asset 
